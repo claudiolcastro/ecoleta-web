@@ -1,5 +1,5 @@
 import React, { useEffect, useState, ChangeEvent, FormEvent } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
 import axios from 'axios';
 
@@ -17,6 +17,8 @@ const CreatePoint: React.FC = () => {
     title: string;
     image: string;
   }
+
+  const history = useHistory();
 
   const [items, setItems] = useState<Item[]>([]);
   const [ufs, setUfs] = useState<string[]>([]);
@@ -100,6 +102,8 @@ const CreatePoint: React.FC = () => {
     await api.post('/points', data);
 
     alert('Ponto de coleta criado');
+
+    history.push('/');
   };
 
   return(
