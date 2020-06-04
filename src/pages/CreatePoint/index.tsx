@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, ChangeEvent, FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
 import axios from 'axios';
@@ -23,6 +23,12 @@ const CreatePoint: React.FC = () => {
   const [cities, setCities] = useState<string[]>([]);
 
   const [initialPosition, setInitialPosition] = useState<[number, number]>([0, 0]);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    whatsapp: '',
+  });
+  const [selectedItems, setSelectedItems] = useState<number[]>([]);
 
   const [selectedUf, setSelectedUf] = useState<string>('0');
   const [selectedCity, setSelectedCity] = useState<string>('0');
@@ -58,6 +64,44 @@ const CreatePoint: React.FC = () => {
     ])
   };
 
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    setFormData({ ...formData, [name]: value });
+  }
+
+  const handleSelectItem = (id: number) => {
+    if (selectedItems.includes(id)) {
+      return setSelectedItems(selectedItems.filter(item => item !== id));
+    }
+    return setSelectedItems([...selectedItems, id]);
+  }
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
+    const { name, email, whatsapp } = formData;
+    const uf = selectedUf;
+    const city = selectedCity;
+    const [latitude, longitude] = selectedMapPosition;
+    const items = selectedItems;
+
+    const data = {
+      name,
+      email,
+      whatsapp,
+      uf,
+      city,
+      latitude,
+      longitude,
+      items
+    }
+
+    await api.post('/points', data);
+
+    alert('Ponto de coleta criado');
+  };
+
   return(
     <div id="page-create-point">
       <header>
@@ -69,7 +113,7 @@ const CreatePoint: React.FC = () => {
         </Link>
       </header>
 
-      <form>
+      <form onSubmit={(e) => handleSubmit(e)}>
         <h1>Cadastro do <br/> ponto de coleta</h1>
 
         <fieldset>
@@ -79,18 +123,33 @@ const CreatePoint: React.FC = () => {
 
             <div className="field">
               <label htmlFor="name">Nome do ponto</label>
-              <input type="text" name="name" id="name"/>
+              <input
+                type="text"
+                name="name"
+                id="name"
+                onChange={(e) => handleInputChange(e)}
+              />
             </div>
 
             <div className="field-group">
               <div className="field">
                 <label htmlFor="name">Email</label>
-                <input type="email" name="email" id="email" />
+                <input
+                  type="email"
+                  name="email"
+                  id="email"
+                  onChange={(e) => handleInputChange(e)}
+                />
               </div>
 
               <div className="field">
                 <label htmlFor="name">Whatsapp</label>
-                <input type="text" name="whatsapp" id="whatsapp" />
+                <input
+                  type="text"
+                  name="whatsapp"
+                  id="whatsapp"
+                  onChange={(e) => handleInputChange(e)}
+                />
               </div>
             </div>
         </fieldset>
@@ -141,7 +200,11 @@ const CreatePoint: React.FC = () => {
 
           <ul className="items-grid">
             {items.map(item => (
-              <li className="selected">
+              <li
+                key={item.id}
+                className={selectedItems.includes(item.id) ? 'selected' : ''}
+                onClick={() => handleSelectItem(item.id)}
+              >
                 <img src={item.image} alt={item.title} />
                 <span>{item.title}</span>
               </li>
