@@ -6,7 +6,6 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ title }) => (
   <header>
-    <h1>{title}</h1>
   </header>
 );
 

@@ -19,7 +19,7 @@ const Home: React.FC = () => (
           <span>
             <FiLogIn />
           </span>
-          <span>Cadastre um ponto de coleta</span>
+          <strong>Cadastre um ponto de coleta</strong>
         </a>
       </main>
     </div>
